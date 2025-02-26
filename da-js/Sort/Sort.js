@@ -1,5 +1,4 @@
 const bubbleSort = (arr) => {
-  console.time("bubble sort time");
   const length = arr.length;
   if (length <= 1) return;
   for (let i = 0; i < length - 1; i++) {
@@ -11,16 +10,15 @@ const bubbleSort = (arr) => {
       }
     }
   }
-  console.log("sorted arr", arr);
-  console.timeEnd("bubble sort time");
   return arr;
 };
 
-// const arr1 = [7, 8, 4, 5, 6, 3, 2, 1];
-// bubbleSort(arr1);
+const arr1 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("bubble sort time");
+console.log("sorted arr", bubbleSort(arr1));
+console.timeEnd("bubble sort time");
 
 const bubbleSortOptimized = (arr) => {
-  console.time("bubble sort time(optimized)");
   const length = arr.length;
   if (length <= 1) return;
   for (let i = 0; i < length - 1; i++) {
@@ -35,16 +33,15 @@ const bubbleSortOptimized = (arr) => {
     }
     if (!hasChange) break;
   }
-  console.log("sorted arr", arr);
-  console.timeEnd("bubble sort time(optimized)");
   return arr;
 };
 
-// const arr2 = [7, 8, 4, 5, 6, 3, 2, 1];
-// bubbleSortOptimized(arr2);
+const arr2 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("bubble sort time(optimized)");
+console.log("sorted arr", bubbleSortOptimized(arr2));
+console.timeEnd("bubble sort time(optimized)");
 
 const insertionSort = (arr) => {
-  console.time("insertion sort time");
   const length = arr.length;
   if (length <= 1) return;
   let preIndex, current;
@@ -60,15 +57,15 @@ const insertionSort = (arr) => {
       arr[preIndex + 1] = current;
     }
   }
-  console.log("sorted arr", arr);
-  console.timeEnd("insertion sort time");
   return arr;
 };
-// const arr3 = [7, 8, 4, 5, 6, 3, 2, 1];
-// insertionSort(arr3);
+
+const arr3 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("insertion sort time");
+console.log("sorted arr", insertionSort(arr3));
+console.timeEnd("insertion sort time");
 
 const binaryInsertionSort = (arr) => {
-  console.time("binary insertion sort time");
   const length = arr.length;
   if (length <= 1) return;
 
@@ -90,15 +87,15 @@ const binaryInsertionSort = (arr) => {
     }
     arr[low] = current;
   }
-  console.log("sorted arr", arr);
-  console.timeEnd("binary insertion sort time");
   return arr;
 };
-// const arr4 = [7, 8, 4, 5, 6, 3, 2, 1];
-// binaryInsertionSort(arr4);
+
+const arr4 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("binary insertion sort time");
+console.log("sorted arr", binaryInsertionSort(arr4));
+console.timeEnd("binary insertion sort time");
 
 const selectionSort = (arr) => {
-  console.time("selection sort time");
   const length = arr.length;
   if (length <= 1) return;
   let minIndex;
@@ -113,10 +110,63 @@ const selectionSort = (arr) => {
     arr[i] = arr[minIndex];
     arr[minIndex] = t;
   }
-  console.log("sorted arr", arr);
-  console.timeEnd("selection sort time");
   return arr;
 };
 
-// const arr5 = [7, 8, 4, 5, 6, 3, 2, 1];
-// selectionSort(arr5);
+const arr5 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("selection sort time");
+console.log("sorted arr", selectionSort(arr5));
+console.timeEnd("selection sort time");
+
+const mergeSort = (arr) => {
+  const length = arr.length;
+  if (length < 2) return arr;
+  let middle = Math.floor(length / 2);
+  let left = arr.slice(0, middle);
+  let right = arr.slice(middle);
+
+  return merge(mergeSort(left), mergeSort(right));
+};
+const merge = (left, right) => {
+  const result = [];
+  while (left.length && right.length) {
+    if (left[0] <= right[0]) {
+      result.push(left.shift());
+    } else {
+      result.push(right.shift());
+    }
+  }
+  while (left.length) result.push(left.shift());
+  while (right.length) result.push(right.shift());
+
+  return result;
+};
+
+const arr6 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("merge sort time");
+console.log("sorted arr", mergeSort(arr6));
+console.timeEnd("merge sort time");
+
+const quickSort = (arr) => {
+  const length = arr.length;
+  if (length < 2) return arr;
+  const midIndex = Math.floor(length / 2);
+  const valArr = arr.splice(midIndex, 1);
+  const left = [];
+  const right = [];
+  const midIndexVal = valArr[0];
+  for (let i = 0; i < arr.length; i++) {
+    if (arr[i] < midIndexVal) {
+      left.push(arr[i]);
+    } else {
+      right.push(arr[i]);
+    }
+  }
+
+  return quickSort(left).concat(midIndexVal, quickSort(right));
+};
+
+const arr7 = [7, 8, 4, 5, 6, 3, 2, 1];
+console.time("quick sort time");
+console.log("sorted arr", quickSort(arr7));
+console.timeEnd("quick sort time");
