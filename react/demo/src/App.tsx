@@ -1,37 +1,32 @@
-import React, { useEffect, useState } from "react";
-import usePointStore from "./store/point";
-import { useShallow } from "zustand/shallow";
-const App: React.FC = () => {
-  const { point, incrementPoint } = usePointStore(
-    useShallow((state) => ({
-      point: state.point,
-      incrementPoint: state.incrementPoint,
-    }))
-  );
-  const [pointStatus, setPointStatus] = useState("");
-  useEffect(() => {
-    usePointStore.subscribe(
-      (state) => state.point,
-      (point) => {
-        console.log("🚀 ~ useEffect ~ point:", point)
-        if (point >= 26) {
-          setPointStatus("合格");
-        } else {
-          setPointStatus("不合格");
-        }
-      },
-      {
-        fireImmediately: true,
-      }
-    );
-  },[]);
+import { connect } from "react-redux";
+import store from "./store";
+function APP() {
   return (
-    <>
-      <div>{point}</div>
-      <div>{pointStatus}</div>
-      <button onClick={incrementPoint}>+1</button>
-    </>
+    <div>
+      <div>
+        <button
+          aria-label="Increment value"
+          onClick={() => store.dispatch({ type: "INCREMENT" })}
+        >
+          Increment
+        </button>
+        <span>{store.getState().value}</span>
+        <button
+          aria-label="Decrement value"
+          onClick={() => store.dispatch({ type: "DECREMENT" })}
+        >
+          Decrement
+        </button>
+      </div>
+    </div>
   );
-};
+}
+const mapStateToProps = (state) => ({
+  count: state,
+});
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  onIncrement: () => dispatch({ type: "INCREMENT" }),
+  onDecrement: () => dispatch({ type: "DECREMENT" }),
+});
+export default connect(mapStateToProps, mapDispatchToProps)(APP);
