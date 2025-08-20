@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useLive2DStore } from './useLive2DStore'
 
 interface ModelResult {
   input: string
@@ -8,15 +9,32 @@ interface ModelResult {
 
 let currentUtterance: SpeechSynthesisUtterance | null = null
 function speakText(text: string) {
+  const live2dStore = useLive2DStore()
   if (currentUtterance) {
     window.speechSynthesis.cancel()
+    live2dStore.stopSpeak()
   }
+  live2dStore.startSpeak()
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'zh-CN' // 中文
   utterance.rate = 1.2 // 语速（0.1-10）
   utterance.volume = 0.8 // 音量（0-1）
 
+  // 监听语音播放结束事件
+  utterance.onend = () => {
+    live2dStore.stopSpeak()
+  }
+
+  // 错误处理：如果语音被中断或出错，也停止 Live2D 的说话动作
+  utterance.onerror = () => {
+    live2dStore.stopSpeak()
+  }
+
+  // 更新全局变量
   currentUtterance = utterance
+
+  // 开始语音播放
+  live2dStore.startSpeak()
   window.speechSynthesis.speak(utterance)
 }
 export const useModelStore = defineStore('model', {
@@ -25,7 +43,9 @@ export const useModelStore = defineStore('model', {
   }),
   actions: {
     stopSpeaking() {
+      const live2dStore = useLive2DStore()
       if (currentUtterance) {
+        live2dStore.stopSpeak()
         window.speechSynthesis.cancel()
         currentUtterance = null
       }
