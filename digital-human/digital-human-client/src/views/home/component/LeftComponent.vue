@@ -161,8 +161,8 @@ const toggleCollapse = () => {
   flex-direction: column;
   width: 100%;
   height: 80vh;
-  background-color: transparent;
   overflow: hidden;
+  background-color: #f9fafb;
 }
 
 /* 历史记录表格样式 */
@@ -171,8 +171,7 @@ const toggleCollapse = () => {
   flex-direction: column;
   background: linear-gradient(135deg, #f0f4ff, #e6e9ff);
   border-radius: 1vw;
-  margin: 1vw;
-  box-shadow: 0 0.25vw 0.75vw rgba(79, 70, 229, 0.12);
+  box-shadow: 0 0.75vw 1.25vw rgba(79, 70, 229, 0.12);
   overflow: hidden;
 }
 
@@ -249,8 +248,8 @@ const toggleCollapse = () => {
   height: -webkit-fill-available;
   background-color: #ffffff;
   border-radius: 1vw;
-  margin: 0 1vw 1vw 1vw;
-  box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.08);
+  margin-top: 1vw;
+  box-shadow: 0 0.75vw 1.25vw rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 

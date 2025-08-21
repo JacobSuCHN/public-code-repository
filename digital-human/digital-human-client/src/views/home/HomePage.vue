@@ -7,14 +7,14 @@ import MiddleComponent from './component/MiddleComponent.vue';
 <template>
   <div class="flex justify-between h-screen w-full overflow-hidden bg-gray-50">
     <div class="w-[35vw] h-full flex flex-col">
-      <LeftComponent class="flex-1 overflow-y-auto" />
+      <LeftComponent class="flex-1 overflow-y-auto p-[1vw]" />
     </div>
 
     <div class="w-[30vw] h-full flex items-center justify-center p-0">
       <MiddleComponent class="w-full h-full" />
     </div>
 
-    <div class="w-[35vw] h-full flex flex-col">
+    <div class="w-[35vw] h-full flex flex-col p-[1vw]">
       <RightComponent class="flex-1 overflow-y-auto" />
     </div>
   </div>
