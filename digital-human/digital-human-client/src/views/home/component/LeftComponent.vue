@@ -66,7 +66,10 @@ const toggleCollapse = () => {
             class="table-row active collapsed-row"
             @click="handleRowClick(modelStore.currentIndex)"
           >
-            <div class="table-cell input-cell" :title="modelStore.callHistory[modelStore.currentIndex].input">
+            <div
+              class="table-cell input-cell"
+              :title="modelStore.callHistory[modelStore.currentIndex].input"
+            >
               {{ truncateText(modelStore.callHistory[modelStore.currentIndex].input) }}
             </div>
             <div class="table-cell time-cell">
@@ -75,16 +78,21 @@ const toggleCollapse = () => {
             <div class="table-cell status-cell">
               <span
                 :class="{
-                  'status-generating':
-                    modelStore.callHistory[modelStore.currentIndex].result === '生成中...',
+                  'status-generating': modelStore.callHistory[modelStore.currentIndex].isLoading,
                   'status-success':
-                    modelStore.callHistory[modelStore.currentIndex].result !== '生成中...',
+                    !modelStore.callHistory[modelStore.currentIndex].isLoading &&
+                    modelStore.callHistory[modelStore.currentIndex].success,
+                  'status-error':
+                    !modelStore.callHistory[modelStore.currentIndex].isLoading &&
+                    !modelStore.callHistory[modelStore.currentIndex].success,
                 }"
               >
                 {{
-                  modelStore.callHistory[modelStore.currentIndex].result === '生成中...'
+                  modelStore.callHistory[modelStore.currentIndex].isLoading
                     ? '生成中'
-                    : '已完成'
+                    : modelStore.callHistory[modelStore.currentIndex].success
+                      ? '成功'
+                      : '失败'
                 }}
               </span>
             </div>
@@ -110,11 +118,12 @@ const toggleCollapse = () => {
             <div class="table-cell status-cell">
               <span
                 :class="{
-                  'status-generating': item.result === '生成中...',
-                  'status-success': item.result !== '生成中...',
+                  'status-generating': item.isLoading,
+                  'status-success': !item.isLoading && item.success,
+                  'status-error': !item.isLoading && !item.success,
                 }"
               >
-                {{ item.result === '生成中...' ? '生成中' : '已完成' }}
+                {{ item.isLoading ? '生成中' : item.success ? '成功' : '失败' }}
               </span>
             </div>
             <div class="table-cell collapse-cell"></div>
@@ -301,6 +310,11 @@ const toggleCollapse = () => {
   font-weight: 500;
 }
 
+.status-error {
+  color: #ef4444;
+  font-weight: 500;
+}
+
 .empty-state {
   display: flex;
   justify-content: center;
@@ -320,5 +334,4 @@ const toggleCollapse = () => {
   justify-content: space-between;
   align-items: center;
 }
-
 </style>

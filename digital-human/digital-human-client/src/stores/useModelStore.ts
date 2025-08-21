@@ -1,12 +1,17 @@
 import { defineStore } from 'pinia'
 import { useLive2DStore } from './useLive2DStore'
 
+
+const DELIMITER = '$$$SPLIT$$$'; // 定义分隔符
+
 // 增加唯一ID标识
 interface ModelResult {
   id: string // 新增唯一标识符
   input: string
   result: string
   timestamp: Date
+  isLoading: boolean
+  success: boolean // 可选属性，表示是否成功
 }
 
 let currentUtterance: SpeechSynthesisUtterance | null = null
@@ -57,43 +62,78 @@ export const useModelStore = defineStore('model', {
     },
 
     async getResult(input: string) {
-      this.stopSpeaking()
-      const uniqueId = generateUniqueId() // 生成唯一ID
+      this.stopSpeaking();
+      const uniqueId = generateUniqueId(); // 生成唯一ID
 
       const newItem: ModelResult = {
-        id: uniqueId, // 绑定唯一ID
+        id: uniqueId,
         input,
         result: '生成中...',
-        timestamp: new Date()
-      }
+        timestamp: new Date(),
+        isLoading: true,
+        success: false,
+      };
 
-      this.callHistory.unshift(newItem)
-      this.setCurrentIndex(0)
+      this.callHistory.unshift(newItem);
+      this.setCurrentIndex(0);
 
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: input })
-        })
+        });
 
-        const data = await res.json()
-        const finalResult = data?.content || '生成失败'
-
-        // 通过ID查找而非固定索引
-        const targetIndex = this.callHistory.findIndex(item => item.id === uniqueId)
-        if (targetIndex !== -1) {
-          // 安全更新指定记录
-          this.callHistory[targetIndex].result = finalResult
+        if (!res.ok || !res.body) {
+          this.callHistory[0].result = '网络错误，请稍后再试';
+          this.callHistory[0].isLoading = false;
+          this.callHistory[0].success = false;
+          throw new Error('Network response was not ok');
         }
 
-        if (data?.content&&targetIndex==this.currentIndex) speakText(finalResult)
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let accumulatedText = '';
+        const targetIndex = this.callHistory.findIndex(item => item.id === uniqueId);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          const chunk = decoder.decode(value, { stream: true });
+          const lines = chunk.split(DELIMITER).filter(line => line.trim() !== '');
+
+          for (const line of lines) {
+            const dataStr = line;
+            try {
+              const data = JSON.parse(dataStr);
+              accumulatedText += data.content;
+
+              if (targetIndex !== -1) {
+                this.callHistory[targetIndex].result = accumulatedText;
+              }
+            } catch (e) {
+              console.error('JSON  解析失败:', e);
+            }
+          }
+        }
+
+        if (targetIndex !== -1) {
+          this.callHistory[targetIndex].isLoading = false;
+          this.callHistory[targetIndex].success = true;
+        }
+
+        if (accumulatedText && this.currentIndex === targetIndex) {
+          speakText(accumulatedText);
+        }
+
       } catch (err) {
-        const targetIndex = this.callHistory.findIndex(item => item.id === uniqueId)
+        const targetIndex = this.callHistory.findIndex(item => item.id === uniqueId);
         if (targetIndex !== -1) {
-          this.callHistory[targetIndex].result = '生成失败'
+          this.callHistory[targetIndex].result = '生成失败';
+          this.callHistory[targetIndex].isLoading = false;
+          this.callHistory[targetIndex].success = false;
         }
-        console.error("API  请求失败:", err)
+        console.error("API  请求失败:", err);
       }
     }
   },

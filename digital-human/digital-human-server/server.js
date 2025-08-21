@@ -11,8 +11,7 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
 });
-const markdownContent =
-`## 2.2.关于拍摄和操作的名词
+const markdownContent = `## 2.2.关于拍摄和操作的名词
 
 - 拍摄格式：RAW/JPG
 
@@ -45,15 +44,29 @@ const markdownContent =
   - 关闭长时间曝光降噪
   - 自定义符合个人习惯的设置
 `;
+const DELIMITER = '$$$SPLIT$$$';
 // 代理 OpenAI 聊天接口
 app.post("/api/chat", async (req, res) => {
   try {
     const { message } = req.body;
-    const completion = await openai.chat.completions.create({
+
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
+
+    const stream = await openai.chat.completions.create({
       model: "qwen-plus",
       messages: [{ role: "user", content: message }],
+      stream: true, // 启用流式输出
     });
-    res.json({ content: completion.choices[0].message.content });
+
+    // 逐个 chunk 返回
+    for await (const chunk of stream) {
+      const content = chunk.choices[0]?.delta || {};
+      res.write(JSON.stringify(content)+DELIMITER);
+    }
+
+    res.end(); // 结束流
   } catch (error) {
     console.error("OpenAI  API Error:", error);
     res.status(500).json({ error: error.message });
