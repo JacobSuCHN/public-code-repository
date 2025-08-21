@@ -150,7 +150,7 @@ const toggleCollapse = () => {
 .markdown-container {
   display: flex;
   flex-direction: column;
-  max-width: 960px;
+  width: 100%;
   height: 80vh;
   background-color: transparent;
   overflow: hidden;
@@ -161,11 +161,10 @@ const toggleCollapse = () => {
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #f0f4ff, #e6e9ff);
-  border-radius: 16px;
-  margin: 16px;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
+  border-radius: 1vw;
+  margin: 1vw;
+  box-shadow: 0 0.25vw 0.75vw rgba(79, 70, 229, 0.12);
   overflow: hidden;
-  transition: all 0.3s ease;
 }
 
 .table-header {
@@ -173,20 +172,19 @@ const toggleCollapse = () => {
   background: linear-gradient(135deg, #4f46e5, #6366f1);
   color: white;
   font-weight: 600;
-  padding: 0.8rem 0;
+  padding: 0.8vw 0;
   position: sticky;
   top: 0;
   z-index: 10;
 }
 
 .table-body {
-  height: 250px;
+  height: 15vw;
   overflow-y: auto;
-  transition: height 0.3s ease;
 }
 
 .table-body.collapsed {
-  height: 55px; /* 单行高度 */
+  height: 3vw; /* 单行高度 */
 }
 
 /* 新增表格底部样式 */
@@ -194,7 +192,7 @@ const toggleCollapse = () => {
   display: flex;
   justify-content: center;
   background-color: linear-gradient(135deg, #f0f4ff, #e6e9ff);
-  border-top: 1px solid #c7d2fe;
+  border-top: 0.1vw solid #c7d2fe;
 }
 
 .collapse-btn {
@@ -204,26 +202,29 @@ const toggleCollapse = () => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+}
+
+.collapse-btn img {
+  width: 1.7vw;
+  height: 1.7vw;
 }
 
 .collapse-btn:hover {
   opacity: 1;
-  transform: translateY(-2px);
+  transform: translateY(-0.1vw);
 }
 
 .collapse-btn svg {
-  margin-left: 4px;
+  margin-left: 0.25vw;
 }
 
 /* 折叠状态下的行样式 */
 .collapsed-row {
   background-color: #e0e7ff !important;
-  border-left: 4px solid #4f46e5;
+  border-left: 0.25vw solid #4f46e5;
   display: flex;
-  padding: 0.8rem 0;
+  padding: 0.8vw 0;
   cursor: pointer;
-  transition: all 0.2s ease;
   border-bottom: none;
 }
 
@@ -238,20 +239,19 @@ const toggleCollapse = () => {
   flex: 1;
   height: -webkit-fill-available;
   background-color: #ffffff;
-  border-radius: 16px;
-  margin: 0 16px 16px 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 1vw;
+  margin: 0 1vw 1vw 1vw;
+  box-shadow: 0 0.25vw 1vw rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
 /* 其他原有样式保持不变 */
 .table-row {
   display: flex;
-  padding: 0.8rem 0;
-  border-bottom: 1px solid #edf2f7;
+  padding: 0.8vw 0;
+  border-bottom: 0.1vw solid #edf2f7;
   cursor: pointer;
-  transition: all 0.2s ease;
-  height: 55px;
+  height: 3vw;
   align-items: center;
 }
 
@@ -261,11 +261,11 @@ const toggleCollapse = () => {
 
 .table-row.active {
   background-color: #e0e7ff;
-  border-left: 4px solid #4f46e5;
+  border-left: 0.25vw solid #4f46e5;
 }
 
 .table-cell {
-  padding: 0 1rem;
+  padding: 0 1vw;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -278,12 +278,12 @@ const toggleCollapse = () => {
 
 .time-cell {
   flex: 1;
-  min-width: 200px;
+  min-width: 12.5vw;
 }
 
 .status-cell {
   flex: 1;
-  min-width: 80px;
+  min-width: 5vw;
 }
 
 .full-row {
@@ -311,26 +311,14 @@ const toggleCollapse = () => {
 }
 
 .preview-header {
-  padding: 1rem;
+  padding: 1vw;
   background: linear-gradient(135deg, #f1f5f9, #b2d3fc);
   color: #4f46e5;
   font-weight: 600;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 0.1vw solid #e2e8f0;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-/* 滚动条样式优化 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(45deg, rgba(197, 210, 252, 0.8), rgba(212, 215, 253, 0.8));
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(45deg, rgba(165, 180, 252, 0.9), rgba(183, 189, 250, 0.9));
-}
 </style>

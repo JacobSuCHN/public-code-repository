@@ -6,4 +6,3 @@ import HomePage from './views/home/HomePage.vue'
   <HomePage />
 </template>
 
-<style scoped></style>

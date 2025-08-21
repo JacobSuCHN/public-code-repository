@@ -1,0 +1,70 @@
+* {
+  font-size: 0.75vw !important;
+}
+
+h1 {
+  font-size: 2vw !important;
+  border-bottom: none !important;
+}
+
+h2 {
+  font-size: 1.5vw !important;
+  border-bottom: none !important;
+}
+
+h3 {
+  font-size: 1.25vw !important;
+  border-bottom: none !important;
+}
+
+h4 {
+  font-size: 1vw !important;
+  border-bottom: none !important;
+}
+
+h5 {
+  font-size: .875vw !important;
+  border-bottom: none !important;
+}
+
+h6 {
+  font-size: .85vw !important;
+  border-bottom: none !important;
+}
+
+hr {
+  height: 0.1vw !important;
+  margin: 0.85vw 0 !important;
+  border: none;
+  border-top-width: 0.1vw !important;
+}
+
+blockquote {
+  border-left-width: 0.25vw !important;
+  margin: 2vw 0 !important;
+  padding-left: 1.25vw !important;
+}
+
+table tr th,
+table tr td {
+  padding: .6vw 1vw !important;
+  border-width: 0.1vw !important;
+}
+
+figure {
+  margin: 0 0 1vw 0 !important;
+}
+
+::-webkit-scrollbar {
+  width: 0.5vw;
+  height: 0.5vw;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, rgba(197, 210, 252, 0.8), rgba(212, 215, 253, 0.8));
+  border-radius: 0.25vw;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, rgba(165, 180, 252, 0.9), rgba(183, 189, 250, 0.9));
+}

@@ -6,19 +6,9 @@ import { useModelStore } from '@/stores/useModelStore'
 const voiceStore = useVoiceStore()
 const modelStore = useModelStore()
 const isVoiceKeyPressed = ref(false)
-const textareaRef = ref<HTMLTextAreaElement | null>(null)
 
-// 自动调整 textarea 高度
-const autoResize = () => {
-  const textarea = textareaRef.value
-  if (textarea) {
-    textarea.style.height = 'auto'
-    textarea.style.height = `${textarea.scrollHeight}px`
-  }
-}
 const handleInput = () => {
   if (voiceStore.error) voiceStore.error = ''
-  autoResize()
 }
 // 键盘按下事件：监听 ctrl+q 键按下
 const handleKeyDown = (event: KeyboardEvent) => {
@@ -51,7 +41,6 @@ const snedMessage = () => {
 
 // 生命周期：组件挂载时添加事件监听器
 onMounted(() => {
-  autoResize()
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
 })
@@ -83,7 +72,6 @@ onBeforeUnmount(() => {
     <div class="transcript-box">
       <div class="edit-container">
         <textarea
-          ref="textareaRef"
           v-model="voiceStore.transcript"
           name="transcript"
           placeholder="识别结果将显示在这里..."
@@ -95,7 +83,7 @@ onBeforeUnmount(() => {
           <p class="error-text">{{ voiceStore.error }}</p>
           <div class="edit-buttons">
             <button class="send-button" title="发送" @click="snedMessage">
-              <img src="@/assets/img/send.svg" class="w-6 h-6" alt="" />
+              <img src="@/assets/img/send.svg" class="w-[1.2vw] h-[1.2vw]" alt="" />
             </button>
           </div>
         </div>
@@ -108,38 +96,39 @@ onBeforeUnmount(() => {
 .voice-input-container {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 16px;
-  max-width: 480px;
+  gap: 1vw;
+  padding: 1vw 1vw;
+  height: 40vh;
+  border-radius: 1vw;
+  width: 100%;
   margin: 0 auto;
   background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0.5vw 1.5vw rgba(0, 0, 0, 0.08);
 }
 
 .voice-button {
   position: relative;
   width: 100%;
-  padding: 1.25rem;
-  font-size: 1.1rem;
+  padding: 1.25vw;
+  font-size: 1.1vw;
   font-weight: 600;
   color: white;
   background: linear-gradient(45deg, #6366f1, #8b5cf6);
   border: none;
-  border-radius: 12px;
+  border-radius: 0.75vw;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0.25vw 0.75vw rgba(99, 102, 241, 0.3);
 }
 
 .voice-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+  transform: translateY(-0.02vw);
+  box-shadow: 0 0.5vw 1vw rgba(99, 102, 241, 0.4);
 }
 
 .voice-button:active {
-  transform: translateY(1px);
+  transform: translateY(0.015vw);
 }
 
 .voice-button.listening {
@@ -149,37 +138,36 @@ onBeforeUnmount(() => {
 
 .key-hint {
   display: block;
-  font-size: 0.85rem;
-  margin-top: 0.5rem;
+  font-size: 0.85vw;
+  margin-top: 0.5vw;
   opacity: 0.8;
 }
 
 .transcript-box {
   width: 100%;
-  min-height: 120px;
-  padding: 1.5rem;
+  height: 25vh;
+  padding: 1vw;
   background: white;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.3s ease;
+  border-radius: 0.75vw;
+  border: 0.015vw solid #e2e8f0;
+  box-shadow: inset 0 0.15vw 0.35vw rgba(0, 0, 0, 0.05);
 }
 
 .edit-container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.5vw;
 }
 
 .edit-textarea {
   width: 100%;
-  min-height: 80px;
-  padding: 0.75rem;
+  height: 15vh;
+  padding: 0.2vw;
   border: none;
-  border-radius: 8px;
+  border-radius: 0.75vw;
   resize: none;
   font-family: inherit;
-  font-size: 1rem;
+  font-size: 1vw;
   line-height: 1.5;
   background: transparent;
 }
@@ -192,28 +180,27 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 0.75vw;
   flex-wrap: wrap;
 }
 .edit-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: 0.5vw;
 }
 
 .send-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 2vw;
+  height: 2vw;
   padding: 0;
   border-radius: 50%;
   background: linear-gradient(45deg, #6366f1, #8b5cf6);
   color: white;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .send-button:hover {
@@ -222,8 +209,8 @@ onBeforeUnmount(() => {
 }
 
 .send-button svg {
-  width: 20px;
-  height: 20px;
+  width: 1.3vw;
+  height: 1.3vw;
   stroke: white;
 }
 
@@ -231,7 +218,6 @@ onBeforeUnmount(() => {
   color: #ef4444;
   font-weight: 500;
   margin: 0;
-  transition: opacity 0.3s ease;
 }
 
 @keyframes pulse {
@@ -239,7 +225,7 @@ onBeforeUnmount(() => {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
   }
   70% {
-    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+    box-shadow: 0 0 0 0.75vw rgba(16, 185, 129, 0);
   }
   100% {
     box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);

@@ -10,14 +10,19 @@ defineProps<{
 
 <template>
   <div class="result-content">
-    <MdPreview style="background: transparent;" :modelValue="content" previewTheme="vuepress" codeTheme="kimbie" />
+    <MdPreview
+      style="background: transparent"
+      :modelValue="content"
+      previewTheme="vuepress"
+      codeTheme="kimbie"
+    />
   </div>
 </template>
 
 <style scoped>
 .result-content {
-  padding: 1rem;
-  font-size: 1rem;
+  padding: 1vw;
+  font-size: 1vw;
   line-height: 1.6;
   height: -webkit-fill-available;
   overflow: auto;

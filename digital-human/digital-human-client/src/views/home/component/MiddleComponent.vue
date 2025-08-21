@@ -5,8 +5,8 @@ import Live2D from '@/components/Live2D.vue';
 
 <template>
   <div class="flex flex-col items-center justify-start h-full relative">
-    <Live2D class="w-full "/>
-    <VoiceInput class="w-full absolute bottom-2.5"/>
+    <Live2D class="w-full mt-[2vh]"/>
+    <VoiceInput class="w-full absolute bottom-[2vh]"/>
   </div>
 </template>
 
