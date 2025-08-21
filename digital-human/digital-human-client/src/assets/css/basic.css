@@ -55,6 +55,12 @@ figure {
   margin: 0 0 1vw 0 !important;
 }
 
+ol,
+ul,
+menu {
+  list-style: disc !important;
+}
+
 ::-webkit-scrollbar {
   width: 0.5vw;
   height: 0.5vw;
