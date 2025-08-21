@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
 import { useModelStore } from '@/stores/useModelStore'
 
 const modelStore = useModelStore()
+const isCollapsed = ref(false) // 控制折叠状态
 
 // 当前选中项的内容
-const markdownContent = computed(() =>
-  modelStore.getCurrentResult?.result  || '请从历史记录中选择一项'
+const markdownContent = computed(
+  () => modelStore.getCurrentResult?.result || '请从历史记录中选择一项',
 )
 
 // 格式化时间显示
@@ -18,74 +19,131 @@ const formatDate = (date: Date) => {
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
-    second: '2-digit'
+    second: '2-digit',
   })
 }
 
 // 截断过长的文本
 const truncateText = (text: string, maxLength = 40) => {
-  return text.length  > maxLength
-    ? text.substring(0,  maxLength) + '...'
-    : text
+  return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
 
 // 处理行点击事件
 const handleRowClick = (index: number) => {
   modelStore.setCurrentIndex(index)
+
+  // 点击当前行时展开/折叠
+  if (isCollapsed.value && index === modelStore.currentIndex) {
+    isCollapsed.value = false
+  }
+}
+
+// 切换折叠状态
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value
 }
 </script>
 
 <template>
-<div class="markdown-container">
-  <!-- 历史记录表格 -->
-  <div class="history-table">
-    <!-- 表头 -->
-    <div class="table-header">
-      <div class="table-cell input-cell">输入内容</div>
-      <div class="table-cell time-cell">时间</div>
-      <div class="table-cell status-cell">状态</div>
-    </div>
+  <div class="markdown-container">
+    <!-- 历史记录表格 -->
+    <div class="history-table">
+      <!-- 表头 - 移除折叠控制按钮 -->
+      <div class="table-header">
+        <div class="table-cell input-cell">输入内容</div>
+        <div class="table-cell time-cell">时间</div>
+        <div class="table-cell status-cell">状态</div>
+        <div class="table-cell collapse-cell"></div>
+        <!-- 保留空单元格保持对齐 -->
+      </div>
 
-    <!-- 表格内容 -->
-    <div class="table-body">
-      <div
-        v-for="(item, index) in modelStore.callHistory"
-        :key="index"
-        class="table-row"
-        :class="{ 'active': index === modelStore.currentIndex   }"
-        @click="handleRowClick(index)"
-      >
-        <div class="table-cell input-cell">
-          {{ truncateText(item.input)   }}
-        </div>
-        <div class="table-cell time-cell">
-          {{ formatDate(item.timestamp)   }}
-        </div>
-        <div class="table-cell status-cell">
-          <span :class="{
-            'status-generating': item.result   === '生成中...',
-            'status-success': item.result   !== '生成中...'
-          }">
-            {{ item.result   === '生成中...' ? '生成中' : '已完成' }}
-          </span>
+      <!-- 表格内容 -->
+      <div class="table-body" :class="{ collapsed: isCollapsed }">
+        <!-- 折叠状态只显示当前行 -->
+        <template v-if="isCollapsed">
+          <div
+            v-if="modelStore.callHistory.length > 0"
+            class="table-row active collapsed-row"
+            @click="handleRowClick(modelStore.currentIndex)"
+          >
+            <div class="table-cell input-cell" :title="modelStore.callHistory[modelStore.currentIndex].input">
+              {{ truncateText(modelStore.callHistory[modelStore.currentIndex].input) }}
+            </div>
+            <div class="table-cell time-cell">
+              {{ formatDate(modelStore.callHistory[modelStore.currentIndex].timestamp) }}
+            </div>
+            <div class="table-cell status-cell">
+              <span
+                :class="{
+                  'status-generating':
+                    modelStore.callHistory[modelStore.currentIndex].result === '生成中...',
+                  'status-success':
+                    modelStore.callHistory[modelStore.currentIndex].result !== '生成中...',
+                }"
+              >
+                {{
+                  modelStore.callHistory[modelStore.currentIndex].result === '生成中...'
+                    ? '生成中'
+                    : '已完成'
+                }}
+              </span>
+            </div>
+            <div class="table-cell collapse-cell"></div>
+          </div>
+        </template>
+
+        <!-- 展开状态显示所有行 -->
+        <template v-else>
+          <div
+            v-for="(item, index) in modelStore.callHistory"
+            :key="index"
+            class="table-row"
+            :class="{ active: index === modelStore.currentIndex }"
+            @click="handleRowClick(index)"
+          >
+            <div class="table-cell input-cell" :title="item.input">
+              {{ truncateText(item.input) }}
+            </div>
+            <div class="table-cell time-cell">
+              {{ formatDate(item.timestamp) }}
+            </div>
+            <div class="table-cell status-cell">
+              <span
+                :class="{
+                  'status-generating': item.result === '生成中...',
+                  'status-success': item.result !== '生成中...',
+                }"
+              >
+                {{ item.result === '生成中...' ? '生成中' : '已完成' }}
+              </span>
+            </div>
+            <div class="table-cell collapse-cell"></div>
+          </div>
+        </template>
+
+        <!-- 空状态提示 -->
+        <div v-if="modelStore.callHistory.length === 0" class="empty-state">
+          <div class="table-cell full-row">暂无历史记录</div>
         </div>
       </div>
 
-      <!-- 空状态提示 -->
-      <div v-if="modelStore.callHistory.length   === 0" class="empty-state">
-        <div class="table-cell full-row">暂无历史记录</div>
+      <!-- 将折叠按钮移到表格底部 -->
+      <div class="table-footer">
+        <button class="collapse-btn" @click="toggleCollapse">
+          <img v-if="isCollapsed" src="../../../assets/img/down.svg" alt="" />
+          <img v-else src="../../../assets/img/up.svg" alt="" />
+        </button>
       </div>
     </div>
-  </div>
 
-  <!-- Markdown 预览区域 -->
-  <div class="markdown-content">
-    <div v-if="modelStore.callHistory.length   > 0" class="preview-header">
-      预览结果 ({{ modelStore.currentIndex   + 1 }}/{{ modelStore.callHistory.length   }})
+    <!-- Markdown 预览区域 -->
+    <div class="markdown-content">
+      <div v-if="modelStore.callHistory.length > 0" class="preview-header">
+        预览结果 ({{ modelStore.currentIndex + 1 }}/{{ modelStore.callHistory.length }})
+      </div>
+      <MarkdownPreview :content="markdownContent" />
     </div>
-    <MarkdownPreview :content="markdownContent" />
   </div>
-</div>
 </template>
 
 <style scoped>
@@ -98,20 +156,16 @@ const handleRowClick = (index: number) => {
   overflow: hidden;
 }
 
-/* 历史记录表格样式 - 修改部分 */
+/* 历史记录表格样式 */
 .history-table {
   display: flex;
   flex-direction: column;
   background: linear-gradient(135deg, #f0f4ff, #e6e9ff);
-  border-bottom: 1px solid #e2e8f0;
-  /* 添加圆角 */
   border-radius: 16px;
-  /* 添加上下左右边距 */
   margin: 16px;
-  /* 添加阴影提升层次感 */
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.12);
-  /* 添加溢出隐藏确保圆角生效 */
   overflow: hidden;
+  transition: all 0.3s ease;
 }
 
 .table-header {
@@ -123,30 +177,70 @@ const handleRowClick = (index: number) => {
   position: sticky;
   top: 0;
   z-index: 10;
-  /* 确保表头也有圆角 */
-  border-top-left-radius: 16px;
-  border-top-right-radius: 16px;
 }
 
 .table-body {
-  max-height: 250px;
+  height: 250px;
   overflow-y: auto;
+  transition: height 0.3s ease;
 }
 
-/* Markdown 预览区域 - 修改部分 */
+.table-body.collapsed {
+  height: 55px; /* 单行高度 */
+}
+
+/* 新增表格底部样式 */
+.table-footer {
+  display: flex;
+  justify-content: center;
+  background-color: linear-gradient(135deg, #f0f4ff, #e6e9ff);
+  border-top: 1px solid #c7d2fe;
+}
+
+.collapse-btn {
+  background: transparent;
+  opacity: 0.8;
+  border: none;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.collapse-btn:hover {
+  opacity: 1;
+  transform: translateY(-2px);
+}
+
+.collapse-btn svg {
+  margin-left: 4px;
+}
+
+/* 折叠状态下的行样式 */
+.collapsed-row {
+  background-color: #e0e7ff !important;
+  border-left: 4px solid #4f46e5;
+  display: flex;
+  padding: 0.8rem 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: none;
+}
+
+.collapsed-row:hover {
+  background-color: #d0d7ff !important;
+}
+
+/* Markdown 预览区域 */
 .markdown-content {
   display: flex;
   flex-direction: column;
   flex: 1;
   height: -webkit-fill-available;
   background-color: #ffffff;
-  /* 添加圆角 */
   border-radius: 16px;
-  /* 添加上下左右边距 */
   margin: 0 16px 16px 16px;
-  /* 添加阴影提升层次感 */
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  /* 添加溢出隐藏确保圆角生效 */
   overflow: hidden;
 }
 
@@ -157,13 +251,15 @@ const handleRowClick = (index: number) => {
   border-bottom: 1px solid #edf2f7;
   cursor: pointer;
   transition: all 0.2s ease;
+  height: 55px;
+  align-items: center;
 }
 
 .table-row:hover {
   background-color: #f1f5ff;
 }
 
-.table-row.active   {
+.table-row.active {
   background-color: #e0e7ff;
   border-left: 4px solid #4f46e5;
 }
@@ -208,9 +304,10 @@ const handleRowClick = (index: number) => {
 .empty-state {
   display: flex;
   justify-content: center;
-  padding: 1.5rem;
   color: #94a3b8;
   font-style: italic;
+  align-items: center;
+  height: 100%;
 }
 
 .preview-header {
@@ -219,6 +316,9 @@ const handleRowClick = (index: number) => {
   color: #4f46e5;
   font-weight: 600;
   border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 /* 滚动条样式优化 */
