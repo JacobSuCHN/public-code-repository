@@ -16,30 +16,22 @@ function speakText(text: string) {
   }
   live2dStore.startSpeak()
   const utterance = new SpeechSynthesisUtterance(text)
-  utterance.lang = 'zh-CN' // 中文
-  utterance.rate = 1.2 // 语速（0.1-10）
-  utterance.volume = 0.8 // 音量（0-1）
+  utterance.lang = 'zh-CN'
+  utterance.rate = 1.2
+  utterance.volume = 0.8
 
-  // 监听语音播放结束事件
-  utterance.onend = () => {
-    live2dStore.stopSpeak()
-  }
+  utterance.onend = () => live2dStore.stopSpeak()
+  utterance.onerror = () => live2dStore.stopSpeak()
 
-  // 错误处理：如果语音被中断或出错，也停止 Live2D 的说话动作
-  utterance.onerror = () => {
-    live2dStore.stopSpeak()
-  }
-
-  // 更新全局变量
   currentUtterance = utterance
-
-  // 开始语音播放
   live2dStore.startSpeak()
   window.speechSynthesis.speak(utterance)
 }
+
 export const useModelStore = defineStore('model', {
   state: () => ({
     callHistory: [] as ModelResult[],
+    currentIndex: 0, // 新增：当前选中项的索引
   }),
   actions: {
     stopSpeaking() {
@@ -50,14 +42,24 @@ export const useModelStore = defineStore('model', {
         currentUtterance = null
       }
     },
+
+    // 新增：设置当前选中索引
+    setCurrentIndex(index: number) {
+      if (index >= 0 && index < this.callHistory.length) {
+        this.currentIndex = index
+      }
+    },
+
     async getResult(input: string) {
       this.stopSpeaking()
       const newItem: ModelResult = {
         input,
-        result: '生成中...', // 初始状态
+        result: '生成中...',
         timestamp: new Date()
       }
       this.callHistory.unshift(newItem)
+      this.setCurrentIndex(0)  // 新增：自动选中最新项
+
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
@@ -75,15 +77,22 @@ export const useModelStore = defineStore('model', {
 
         if (data?.content) speakText(finalResult)
       } catch (err) {
-        // 更新失败状态
         this.callHistory[0].result = '生成失败'
-        console.error("API 请求失败:", err)
+        console.error("API  请求失败:", err)
       }
     }
   },
   getters: {
     getCallHistory: (state) => state.callHistory,
+    getCurrentIndex: (state) => state.currentIndex,  // 新增
 
+    // 修改：获取当前选中项
+    getCurrentResult: (state) => {
+      if (state.callHistory.length === 0) return null
+      return state.callHistory[state.currentIndex]
+    },
+
+    // 保留原有功能
     getLastCall: (state) => {
       if (state.callHistory.length === 0) return null
       return state.callHistory[state.callHistory.length - 1]

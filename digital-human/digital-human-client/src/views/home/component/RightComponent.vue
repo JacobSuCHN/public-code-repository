@@ -48,7 +48,6 @@ chartStore.fetchChartData()
 }
 
 .markdown-content {
-  padding: 2rem;
   height: 100%;
   color: #333;
   line-height: 1.8;
