@@ -3,8 +3,8 @@ import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useVoiceStore } from '@/stores/useVoiceStore'
 import { useModelStore } from '@/stores/useModelStore'
 import SendSVG from '@/assets/img/send.svg'
-import VoiceSVG from '@/assets/img/voice.svg'
-import VoiceOffSVG from '@/assets/img/voice-off.svg'
+import VolumeNotice from '@/assets/img/volume-notice.svg'
+import VolumeMuteSVG from '@/assets/img/volume-mute.svg'
 import RefreshSVG from '@/assets/img/refresh.svg'
 const voiceStore = useVoiceStore()
 const modelStore = useModelStore()
@@ -107,7 +107,7 @@ onBeforeUnmount(() => {
               title="播放/暂停语音"
             >
               <img
-                :src="voiceStore.isSpeaking ? VoiceSVG : VoiceOffSVG"
+                :src="voiceStore.isSpeaking ? VolumeNotice : VolumeMuteSVG"
                 class="w-[1.2vw] h-[1.2vw]"
                 alt="播放状态"
               />
@@ -243,7 +243,7 @@ onBeforeUnmount(() => {
   width: 2vw;
   height: 2vw;
   border-radius: 50%;
-  background: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 100%);
+  background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 100%);
   display: flex;
   align-items: center;
   justify-content: center;
