@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { useLive2DStore } from './useLive2DStore'
+import { useVoiceStore } from './useVoiceStore';
 
 
 const DELIMITER = '$$$SPLIT$$$'; // 定义分隔符
@@ -21,11 +22,14 @@ interface ModelResult {
 
 let currentUtterance: SpeechSynthesisUtterance | null = null
 function speakText(text: string) {
+  const voiceStore = useVoiceStore()
   const live2dStore = useLive2DStore()
+
   if (currentUtterance) {
     window.speechSynthesis.cancel()
     live2dStore.stopSpeak()
   }
+  if (!voiceStore.isSpeaking) return
   live2dStore.startSpeak()
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = 'zh-CN'
@@ -65,6 +69,13 @@ export const useModelStore = defineStore('model', {
       if (index >= 0 && index < this.callHistory.length) {
         this.currentIndex = index
       }
+    },
+
+    resetCallHistory() {
+      this.callHistory = []
+      this.modelHistory = []
+      this.currentIndex = 0
+      this.stopSpeaking()
     },
 
     async getResult(input: string) {

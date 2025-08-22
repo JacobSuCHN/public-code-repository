@@ -2,7 +2,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { useVoiceStore } from '@/stores/useVoiceStore'
 import { useModelStore } from '@/stores/useModelStore'
-
+import SendSVG from '@/assets/img/send.svg'
+import VoiceSVG from '@/assets/img/voice.svg'
+import VoiceOffSVG from '@/assets/img/voice-off.svg'
+import RefreshSVG from '@/assets/img/refresh.svg'
 const voiceStore = useVoiceStore()
 const modelStore = useModelStore()
 const isVoiceKeyPressed = ref(false)
@@ -12,7 +15,7 @@ const handleInput = () => {
 }
 // 键盘按下事件：监听 ctrl+q 键按下
 const handleKeyDown = (event: KeyboardEvent) => {
-  if (event.ctrlKey && event.code === "KeyQ" && !isVoiceKeyPressed.value) {
+  if (event.ctrlKey && event.code === 'KeyQ' && !isVoiceKeyPressed.value) {
     modelStore.stopSpeaking() // 停止语音输出
     isVoiceKeyPressed.value = true
     voiceStore.startRecognition()
@@ -21,7 +24,7 @@ const handleKeyDown = (event: KeyboardEvent) => {
 
 // 键盘释放事件：监听 ctrl+q 键松开
 const handleKeyUp = (event: KeyboardEvent) => {
-  if (!event.ctrlKey && !(event.code === "KeyQ") && isVoiceKeyPressed.value) {
+  if (!event.ctrlKey && !(event.code === 'KeyQ') && isVoiceKeyPressed.value) {
     isVoiceKeyPressed.value = false
     voiceStore.stopRecognition()
   }
@@ -37,6 +40,18 @@ const snedMessage = () => {
   modelStore.getResult(trimmedText)
   voiceStore.transcript = ''
   voiceStore.error = ''
+}
+
+const toggleSpeech = () => {
+  if (voiceStore.isSpeaking) {
+    voiceStore.closeSpeaking()
+  } else {
+    voiceStore.openSpeaking()
+  }
+}
+
+const resetHistory = () => {
+  modelStore.resetCallHistory()
 }
 
 // 生命周期：组件挂载时添加事件监听器
@@ -82,8 +97,23 @@ onBeforeUnmount(() => {
         <div class="edit-footer">
           <p class="error-text">{{ voiceStore.error }}</p>
           <div class="edit-buttons">
+            <button class="reset-button" @click="resetHistory" title="清空历史">
+              <img :src="RefreshSVG" class="w-[1.2vw] h-[1.2vw]" alt="重置" />
+            </button>
+            <button
+              class="speak-button"
+              :class="{ active: voiceStore.isSpeaking }"
+              @click="toggleSpeech"
+              title="播放/暂停语音"
+            >
+              <img
+                :src="voiceStore.isSpeaking ? VoiceSVG : VoiceOffSVG"
+                class="w-[1.2vw] h-[1.2vw]"
+                alt="播放状态"
+              />
+            </button>
             <button class="send-button" title="发送" @click="snedMessage">
-              <img src="@/assets/img/send.svg" class="w-[1.2vw] h-[1.2vw]" alt="" />
+              <img :src="SendSVG" class="w-[1.2vw] h-[1.2vw]" alt="" />
             </button>
           </div>
         </div>
@@ -208,6 +238,27 @@ onBeforeUnmount(() => {
   transform: scale(1.1);
 }
 
+.speak-button,
+.reset-button {
+  width: 2vw;
+  height: 2vw;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.speak-button.active {
+  background: linear-gradient(45deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.speak-button:hover,
+.reset-button:hover {
+  transform: scale(1.1);
+}
 .send-button svg {
   width: 1.3vw;
   height: 1.3vw;
