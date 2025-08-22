@@ -65,6 +65,12 @@ table {
   border-spacing: 0.15vw !important;
 }
 
+code {
+  padding: 0.2vw !important;
+  margin: 0 0.1vw !important;
+  line-height: 1.5vw !important;
+}
+
 ::-webkit-scrollbar {
   width: 0.5vw !important;
   height: 0.5vw !important;
