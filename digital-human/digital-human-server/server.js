@@ -44,11 +44,11 @@ const markdownContent = `## 2.2.关于拍摄和操作的名词
   - 关闭长时间曝光降噪
   - 自定义符合个人习惯的设置
 `;
-const DELIMITER = '$$$SPLIT$$$';
+const DELIMITER = "$$$SPLIT$$$";
 // 代理 OpenAI 聊天接口
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message } = req.body;
+    const { messages } = req.body;
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
@@ -56,14 +56,14 @@ app.post("/api/chat", async (req, res) => {
 
     const stream = await openai.chat.completions.create({
       model: "qwen-plus",
-      messages: [{ role: "user", content: message }],
       stream: true, // 启用流式输出
+      messages,
     });
 
     // 逐个 chunk 返回
     for await (const chunk of stream) {
       const content = chunk.choices[0]?.delta || {};
-      res.write(JSON.stringify(content)+DELIMITER);
+      res.write(JSON.stringify(content) + DELIMITER);
     }
 
     res.end(); // 结束流

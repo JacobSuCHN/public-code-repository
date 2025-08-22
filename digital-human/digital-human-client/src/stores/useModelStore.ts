@@ -4,6 +4,11 @@ import { useLive2DStore } from './useLive2DStore'
 
 const DELIMITER = '$$$SPLIT$$$'; // 定义分隔符
 
+interface Model {
+  role: string
+  content: string
+}
+
 // 增加唯一ID标识
 interface ModelResult {
   id: string // 新增唯一标识符
@@ -42,6 +47,7 @@ function generateUniqueId() {
 
 export const useModelStore = defineStore('model', {
   state: () => ({
+    modelHistory: [] as Model[],
     callHistory: [] as ModelResult[],
     currentIndex: 0,
   }),
@@ -76,12 +82,12 @@ export const useModelStore = defineStore('model', {
 
       this.callHistory.unshift(newItem);
       this.setCurrentIndex(0);
-
+      this.modelHistory.push({ role: 'user', content: input });
       try {
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: input })
+          body: JSON.stringify({ messages: this.modelHistory })
         });
 
         if (!res.ok || !res.body) {
@@ -120,6 +126,7 @@ export const useModelStore = defineStore('model', {
         if (targetIndex !== -1) {
           this.callHistory[targetIndex].isLoading = false;
           this.callHistory[targetIndex].success = true;
+          this.modelHistory.push({ role: 'assistant', content: accumulatedText });
         }
 
         if (accumulatedText && this.currentIndex === targetIndex) {
