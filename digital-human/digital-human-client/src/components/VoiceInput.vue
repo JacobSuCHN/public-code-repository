@@ -33,6 +33,10 @@ const handleKeyUp = (event: KeyboardEvent) => {
 // 发送消息
 const snedMessage = () => {
   const trimmedText = voiceStore.transcript.trim()
+  if (modelStore.isProcessing) {
+    voiceStore.error = '上一个请求正在处理中，请稍后再试'
+    return
+  }
   if (!trimmedText) {
     voiceStore.error = '请输入内容后再发送'
     return
@@ -56,6 +60,7 @@ const resetHistory = () => {
 
 // 生命周期：组件挂载时添加事件监听器
 onMounted(() => {
+  modelStore.stopSpeaking()
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
 })
@@ -112,7 +117,12 @@ onBeforeUnmount(() => {
                 alt="播放状态"
               />
             </button>
-            <button class="send-button" title="发送" @click="snedMessage">
+            <button
+            class="send-button"
+              :class="{ active: !modelStore.isProcessing }"
+              title="发送"
+              @click="snedMessage"
+            >
               <img :src="SendSVG" class="w-[1.2vw] h-[1.2vw]" alt="" />
             </button>
           </div>
@@ -219,27 +229,9 @@ onBeforeUnmount(() => {
   gap: 0.5vw;
 }
 
-.send-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2vw;
-  height: 2vw;
-  padding: 0;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #6366f1, #8b5cf6);
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-.send-button:hover {
-  background: linear-gradient(45deg, #6366f1, #8b5cf6);
-  transform: scale(1.1);
-}
-
 .speak-button,
-.reset-button {
+.reset-button,
+.send-button {
   width: 2vw;
   height: 2vw;
   border-radius: 50%;
@@ -250,13 +242,15 @@ onBeforeUnmount(() => {
   cursor: pointer;
 }
 
-.speak-button.active {
+.speak-button.active,
+.send-button.active {
   background: linear-gradient(45deg, #6366f1, #8b5cf6);
   color: white;
 }
 
 .speak-button:hover,
-.reset-button:hover {
+.reset-button:hover,
+.send-button:hover {
   transform: scale(1.1);
 }
 .send-button svg {
