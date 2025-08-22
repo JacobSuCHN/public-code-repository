@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import MarkdownPreview from '@/components/MarkdownPreview.vue'
-import { useChartStore } from '@/stores/useChartStore'
+import { useArticleStore } from '@/stores/useArticleStore'
 
-const chartStore = useChartStore()
-chartStore.fetchChartData()
+const articleStore = useArticleStore()
+articleStore.getArticle()
 </script>
 
 <template>
   <div class="markdown-container">
     <div class="markdown-content">
-      <MarkdownPreview :content="chartStore.content" />
+      <MarkdownPreview :content="articleStore.content" />
     </div>
   </div>
 </template>

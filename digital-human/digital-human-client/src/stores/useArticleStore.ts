@@ -1,15 +1,14 @@
-// src/stores/chartStore.js
 import { defineStore } from 'pinia'
 
-export const useChartStore = defineStore('chart', {
+export const useArticleStore = defineStore('chart', {
   state: () => ({
     content: '',
   }),
   actions: {
     // 异步获取数据的方法
-    async fetchChartData() {
+    async getArticle() {
       try {
-        const res = await fetch('/api/chart', {
+        const res = await fetch('/api/article', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         })
