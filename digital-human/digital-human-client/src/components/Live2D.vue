@@ -1,9 +1,3 @@
-<template>
-  <div class="live2d-container">
-    <canvas ref="live2dCanvas" class="live2d-canvas"></canvas>
-  </div>
-</template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useLive2DStore } from '@/stores/useLive2DStore'
@@ -16,6 +10,11 @@ onMounted(() => {
   }
 })
 </script>
+<template>
+  <div class="live2d-container">
+    <canvas ref="live2dCanvas" class="live2d-canvas"></canvas>
+  </div>
+</template>
 
 <style scoped>
 .live2d-container {

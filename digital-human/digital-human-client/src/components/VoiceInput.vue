@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useVoiceStore } from '@/stores/useVoiceStore'
 import { useModelStore } from '@/stores/useModelStore'
 import SendSVG from '@/assets/img/send.svg'
 import VolumeNotice from '@/assets/img/volume-notice.svg'
 import VolumeMuteSVG from '@/assets/img/volume-mute.svg'
-import RefreshSVG from '@/assets/img/refresh.svg'
 const voiceStore = useVoiceStore()
 const modelStore = useModelStore()
 const isVoiceKeyPressed = ref(false)
@@ -21,6 +20,14 @@ const handleKeyDown = (event: KeyboardEvent) => {
     voiceStore.startRecognition()
   }
 }
+const handleInputKeyDown = (event: KeyboardEvent) => {
+  if (event.key === 'Enter') {
+    if (event.shiftKey) return
+
+    event.preventDefault()
+    sendMessage()
+  }
+}
 
 // 键盘释放事件：监听 ctrl+q 键松开
 const handleKeyUp = (event: KeyboardEvent) => {
@@ -31,9 +38,9 @@ const handleKeyUp = (event: KeyboardEvent) => {
 }
 
 // 发送消息
-const snedMessage = () => {
+const sendMessage = () => {
   const trimmedText = voiceStore.transcript.trim()
-  if (modelStore.isProcessing) {
+  if (currentIsProgressing.value && modelStore.isProcessing) {
     voiceStore.error = '上一个请求正在处理中，请稍后再试'
     return
   }
@@ -53,10 +60,9 @@ const toggleSpeech = () => {
     voiceStore.openSpeaking()
   }
 }
-
-const resetHistory = () => {
-  modelStore.resetCallHistory()
-}
+const currentIsProgressing = computed(() => {
+  return modelStore.getLastCallInSession?.isProcessing
+})
 
 // 生命周期：组件挂载时添加事件监听器
 onMounted(() => {
@@ -97,14 +103,12 @@ onBeforeUnmount(() => {
           placeholder="识别结果将显示在这里..."
           class="edit-textarea"
           @input="handleInput"
+          @keydown="handleInputKeyDown"
           autofocus
         />
         <div class="edit-footer">
           <p class="error-text">{{ voiceStore.error }}</p>
           <div class="edit-buttons">
-            <button class="reset-button" @click="resetHistory" title="清空历史">
-              <img :src="RefreshSVG" class="w-[1.2vw] h-[1.2vw]" alt="重置" />
-            </button>
             <button
               class="speak-button"
               :class="{ active: voiceStore.isSpeaking }"
@@ -118,10 +122,10 @@ onBeforeUnmount(() => {
               />
             </button>
             <button
-            class="send-button"
-              :class="{ active: !modelStore.isProcessing }"
+              class="send-button"
+              :class="{ active: !currentIsProgressing || !modelStore.isProcessing }"
               title="发送"
-              @click="snedMessage"
+              @click="sendMessage"
             >
               <img :src="SendSVG" class="w-[1.2vw] h-[1.2vw]" alt="" />
             </button>

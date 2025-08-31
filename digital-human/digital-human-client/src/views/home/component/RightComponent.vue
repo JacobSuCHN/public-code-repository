@@ -1,36 +1,37 @@
 <script setup lang="ts">
-import MarkdownPreview from '@/components/MarkdownPreview.vue'
-import { useArticleStore } from '@/stores/useArticleStore'
+import { useModelStore } from '@/stores/useModelStore'
+import ChatPreview from '@/components/ChatPreview.vue'
 
-const articleStore = useArticleStore()
-articleStore.getArticle()
+const modelStore = useModelStore()
 </script>
 
 <template>
   <div class="markdown-container">
     <div class="markdown-content">
-      <MarkdownPreview :content="articleStore.content" />
+      <ChatPreview :chatData="modelStore.getCurrentSession" />
     </div>
   </div>
 </template>
 
 <style scoped>
 .markdown-container {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  border-radius: 1vw;
-  background-color: #f9fafb;
-  box-shadow: 0 0.75vw 1.25vw rgba(0, 0, 0, 0.08);
+  height: 100%;
   overflow: hidden;
+  background-color: #f9fafb;
+  padding: 1vw;
 }
 
 .markdown-content {
-  height: 100%;
-  color: #333;
-  line-height: 1.8;
-  background-color: #f9fafb;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
   height: -webkit-fill-available;
+  background-color: #ffffff;
+  border-radius: 1vw;
+  box-shadow: 0 0.75vw 1.25vw rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
-
-
 </style>

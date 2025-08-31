@@ -24,7 +24,5 @@ defineProps<{
   padding: 1vw;
   font-size: 1vw;
   line-height: 1.6;
-  height: -webkit-fill-available;
-  overflow: auto;
 }
 </style>
