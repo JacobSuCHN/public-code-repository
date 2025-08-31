@@ -23,11 +23,11 @@ const props = defineProps({
   },
   botName: {
     type: String,
-    default: 'AI助手',
+    default: '数字人',
   },
   userName: {
     type: String,
-    default: '用户',
+    default: '我',
   },
 })
 
