@@ -5,6 +5,7 @@ import type { ModelResult } from '@/stores/useModelStore'
 import MarkdownPreview from './MarkdownPreview.vue'
 import RobotSVG from '@/assets/img/robot.svg'
 import UserSVG from '@/assets/img/user.svg'
+import SendSVG from '@/assets/img/send.svg'
 
 const props = defineProps({
   chatData: {
@@ -95,6 +96,31 @@ onMounted(() => {
               <MarkdownPreview :content="item.result" />
             </div>
           </div>
+        </div>
+      </div>
+      <div
+        v-if="chatData.length === 0"
+        class="flex flex-col items-center justify-center py-12 text-center"
+      >
+        <img :src="botAvatar" alt="Empty Chat" class="w-16 h-16 text-gray-300 mb-4" />
+        <h3 class="text-lg font-medium text-gray-700">暂无聊天记录</h3>
+        <div class="text-sm text-gray-500 mt-2">
+          <span class="flex items-center">
+            <span class="mr-1">🎙️</span>
+            按住说话 ·
+            <kbd class="ml-1 px-1 py-0.5 bg-gray-200 rounded text-xs">Shift+Q</kbd> 语音输入
+          </span>
+        </div>
+        <div class="text-sm text-gray-500 mt-2">
+          <span class="flex items-center">
+            <span class="mr-1">✏️</span>
+            输入文字后按 <kbd class="mx-1 px-1 py-0.5 bg-gray-200 rounded text-xs">Enter</kbd>
+            <span class="mx-1">或</span>
+            <div class="inline-flex items-center justify-center p-[0.3vw] rounded-full bg-[#8b5cf6]">
+              <img :src="SendSVG" class="w-[0.6vw] h-[0.6vw]" alt="" />
+            </div>
+            <div class="ml-1">开始对话</div>
+          </span>
         </div>
       </div>
     </div>
