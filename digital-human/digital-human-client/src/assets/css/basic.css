@@ -70,6 +70,9 @@ code {
   margin: 0 0.1vw !important;
   line-height: 1.5vw !important;
 }
+.vuepress-theme .md-editor-code pre code span[rn-wrapper] {
+    top: 0.2em !important;
+}
 
 ::-webkit-scrollbar {
   width: 0.5vw !important;
